@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { hashPin } from '../../store/persistence';
+import { SimpleClockIcon } from '../SimpleClockIcon';
 
 export function PinLock({
   expectedHash,
@@ -29,7 +30,9 @@ export function PinLock({
 
   return (
     <div className="adult-screen" style={{ textAlign: 'center' }}>
-      <div className="hero-icons" aria-hidden="true">🔒</div>
+      <div className="hero-icons" style={{ display: 'flex', justifyContent: 'center' }} aria-hidden="true">
+        <SimpleClockIcon size={42} />
+      </div>
       <h1 className="hero-title" style={{ fontSize: '1.5rem' }}>Grown-up PIN</h1>
       <p className="hero-sub">{error ? 'Try again' : 'Enter your 4-digit PIN'}</p>
       <div className="pin-dots" aria-hidden="true">

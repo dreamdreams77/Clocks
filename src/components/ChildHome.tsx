@@ -8,6 +8,7 @@ import { NextThing } from './NextThing';
 import { TimelineView } from './TimelineView';
 import { SleepLogView } from './SleepLogView';
 import { InstallBanner } from './InstallBanner';
+import { SimpleClockIcon } from './SimpleClockIcon';
 
 export function ChildHome({ onOpenAdult }: { onOpenAdult: () => void }) {
   const { data, now, appState, markDone, startTimerFor } = useStore();
@@ -53,7 +54,9 @@ export function ChildHome({ onOpenAdult }: { onOpenAdult: () => void }) {
 
       <div className="top-bar">
         <span style={{ fontSize: '1.6rem' }} aria-hidden="true">{theme.icon}</span>
-        <button className="icon-btn" onClick={onOpenAdult} aria-label="Grown-up settings">🔒</button>
+        <button className="icon-btn" onClick={onOpenAdult} aria-label="Grown-up settings">
+          <SimpleClockIcon />
+        </button>
       </div>
 
       <InstallBanner />
