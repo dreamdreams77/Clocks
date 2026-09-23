@@ -102,7 +102,12 @@ export function computeClockState(now: Date, clock: Clock, sleepState: SleepStat
 
   // fixedTime (also used by 'sleep' and 'wakeup' role clocks)
   const time = clock.time ?? '00:00';
-  const today = startOfDay(now);
+  // Overnight, "today" for a daytime routine clock (Daddy at 7:30, School at 9:00, ...) means the
+  // upcoming wake day, not the current calendar date — otherwise a clock whose time-of-day already
+  // passed earlier today would wrongly read "ready" again at 11pm instead of counting down to
+  // tomorrow morning. During the day the wake day and the calendar day are the same, so this only
+  // changes anything while asleep.
+  const today = sleepState.mode === 'night' ? startOfDay(sleepState.wakeInstant) : startOfDay(now);
   const todayAllowed = isDayAllowed(today, clock.repeat);
   const todayKey = toISODate(today);
   const todayTarget = todayAllowed ? atTime(today, time) : null;

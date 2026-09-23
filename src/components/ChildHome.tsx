@@ -32,7 +32,6 @@ export function ChildHome({ onOpenAdult }: { onOpenAdult: () => void }) {
 
   const childEntries = appState.clockStates.filter((e) => e.clock.visibility === 'child');
   const activeEntries = childEntries.filter((e) => e.state.status !== 'inactive' && e.state.status !== 'idle' && e.state.status !== 'completed');
-  const waitingEntries = activeEntries.filter((e) => e.state.status !== 'waitingForWake');
   const completedEntries = childEntries.filter((e) => e.state.status === 'completed');
   const idleTimers = childEntries.filter((e) => e.state.status === 'idle' && e.clock.scheduleType === 'timer');
 
@@ -80,72 +79,72 @@ export function ChildHome({ onOpenAdult }: { onOpenAdult: () => void }) {
         </div>
       )}
 
-      {appState.sleepState.mode === 'day' && !wakeReadyNotDone && (
-        <>
-          {data.settings.showTimeline && (
-            <div className="mode-toggle">
-              <button className={`chip-btn${showTimeline ? ' is-active' : ''}`} onClick={() => setShowTimeline((v) => !v)}>
-                🗺 {showTimeline ? 'Hide' : 'Show'} timeline
-              </button>
-            </div>
-          )}
+      {/* The rest of the day's/night's clocks — always visible together, not just after wake,
+          so the child can see everything that's set (per "multiple clocks on the main page"). */}
+      <>
+        {data.settings.showTimeline && (
+          <div className="mode-toggle">
+            <button className={`chip-btn${showTimeline ? ' is-active' : ''}`} onClick={() => setShowTimeline((v) => !v)}>
+              🗺 {showTimeline ? 'Hide' : 'Show'} timeline
+            </button>
+          </div>
+        )}
 
-          {showTimeline ? (
-            <TimelineView sleepClock={appState.sleepClock} wakeClock={appState.wakeClock} sleepState={appState.sleepState} entries={childEntries} />
-          ) : data.settings.childViewMode === 'next' ? (
-            <NextThing now={now} entry={nextEntry} reducedMotion={reducedMotion} onDone={() => nextEntry && markDone(nextEntry.clock.id, nextEntry.state.occurrenceKey!)} />
-          ) : (
-            <>
-              {waitingEntries.length > 0 && (
+        {showTimeline ? (
+          <TimelineView sleepClock={appState.sleepClock} wakeClock={appState.wakeClock} sleepState={appState.sleepState} entries={childEntries} />
+        ) : data.settings.childViewMode === 'next' ? (
+          <NextThing now={now} entry={nextEntry} reducedMotion={reducedMotion} onDone={() => nextEntry && markDone(nextEntry.clock.id, nextEntry.state.occurrenceKey!)} />
+        ) : (
+          <>
+            {activeEntries.length > 0 && (
+              <div className="clock-wall">
+                {activeEntries.map(({ clock, state }) => (
+                  <ClockCard
+                    key={clock.id}
+                    clock={clock}
+                    state={state}
+                    now={now}
+                    reducedMotion={reducedMotion}
+                    faceStyle={faceStyle}
+                    onDone={() => markDone(clock.id, state.occurrenceKey!)}
+                  />
+                ))}
+              </div>
+            )}
+
+            {idleTimers.length > 0 && (
+              <>
+                <div className="section-title">⏱ Ready to start</div>
                 <div className="clock-wall">
-                  {waitingEntries.map(({ clock, state }) => (
-                    <ClockCard
-                      key={clock.id}
-                      clock={clock}
-                      state={state}
-                      now={now}
-                      reducedMotion={reducedMotion}
-                      faceStyle={faceStyle}
-                      onDone={() => markDone(clock.id, state.occurrenceKey!)}
-                    />
+                  {idleTimers.map(({ clock }) => (
+                    <div className="clock-card" key={clock.id}>
+                      <div style={{ fontSize: '1.8rem' }} aria-hidden="true">{clock.icon}</div>
+                      <div className="clock-card-name">{clock.name}</div>
+                      <div className="clock-card-status">Waiting to start</div>
+                      <button className="done-btn" onClick={() => startTimerFor(clock.id)}>Start ▶</button>
+                    </div>
                   ))}
                 </div>
-              )}
+              </>
+            )}
 
-              {idleTimers.length > 0 && (
-                <>
-                  <div className="section-title">⏱ Ready to start</div>
-                  <div className="clock-wall">
-                    {idleTimers.map(({ clock }) => (
-                      <div className="clock-card" key={clock.id}>
-                        <div style={{ fontSize: '1.8rem' }} aria-hidden="true">{clock.icon}</div>
-                        <div className="clock-card-name">{clock.name}</div>
-                        <div className="clock-card-status">Waiting to start</div>
-                        <button className="done-btn" onClick={() => startTimerFor(clock.id)}>Start ▶</button>
-                      </div>
-                    ))}
-                  </div>
-                </>
-              )}
+            {completedEntries.length > 0 && (
+              <>
+                <div className="section-title">✓ Done</div>
+                <div className="clock-wall">
+                  {completedEntries.map(({ clock, state }) => (
+                    <ClockCard key={clock.id} clock={clock} state={state} now={now} reducedMotion={reducedMotion} faceStyle={faceStyle} />
+                  ))}
+                </div>
+              </>
+            )}
 
-              {completedEntries.length > 0 && (
-                <>
-                  <div className="section-title">✓ Done</div>
-                  <div className="clock-wall">
-                    {completedEntries.map(({ clock, state }) => (
-                      <ClockCard key={clock.id} clock={clock} state={state} now={now} reducedMotion={reducedMotion} faceStyle={faceStyle} />
-                    ))}
-                  </div>
-                </>
-              )}
-
-              {activeEntries.length === 0 && completedEntries.length === 0 && idleTimers.length === 0 && (
-                <div className="empty-state">Nothing scheduled right now. ✨</div>
-              )}
-            </>
-          )}
-        </>
-      )}
+            {activeEntries.length === 0 && completedEntries.length === 0 && idleTimers.length === 0 && (
+              <div className="empty-state">Nothing scheduled right now. ✨</div>
+            )}
+          </>
+        )}
+      </>
 
       {appState.sleepState.mode === 'day' && !wakeReadyNotDone && <SleepLogView entries={data.sleepLog} />}
     </div>

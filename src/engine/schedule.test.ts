@@ -103,6 +103,17 @@ describe('post-wake fixed-time clocks', () => {
     expect(later.status).toBe('ready');
   });
 
+  it('at night, a fixed-time clock counts down to tomorrow instead of showing a stale "ready" from earlier today', () => {
+    // Daddy's 7:30am already came and went hours ago; it's now 11:15pm and nobody marked it done.
+    const now = dt(2024, 6, 11, 23, 15);
+    const sleepState = computeSleepState(now, sleep, wake); // mode: 'night', wakeInstant: tomorrow 7:00am
+    const daddy = baseClock({ id: 'daddy', name: 'Daddy', icon: '👨', role: 'person', time: '07:30' });
+    const state = computeClockState(now, daddy, sleepState);
+    expect(state.status).toBe('upcoming');
+    expect(state.targetInstant).toEqual(dt(2024, 6, 12, 7, 30));
+    expect(Math.round(state.msRemaining / 60000)).toBe(8 * 60 + 15);
+  });
+
   it('marking done moves the clock to completed for that occurrence, then rolls to next day', () => {
     const daddy = baseClock({ id: 'daddy', name: 'Daddy', icon: '👨', role: 'person', time: '07:30' });
     const now = dt(2024, 6, 11, 7, 35);

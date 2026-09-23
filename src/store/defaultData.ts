@@ -53,6 +53,7 @@ export const CLOCK_PRESETS: Array<{ id: string; name: string; icon: string; role
   { id: 'brush', name: 'Brush Teeth', icon: '🪥', role: 'event', scheduleType: 'fixedTime', time: '08:30' },
   { id: 'dressed', name: 'Get Dressed', icon: '👕', role: 'event', scheduleType: 'fixedTime', time: '08:45' },
   { id: 'schoolp', name: 'School', icon: '🎒', role: 'event', scheduleType: 'fixedTime', time: '09:00' },
+  { id: 'shower', name: 'Shower', icon: '🚿', role: 'event', scheduleType: 'fixedTime', time: '18:00' },
   { id: 'bath', name: 'Bath', icon: '🛁', role: 'event', scheduleType: 'fixedTime', time: '18:30' },
   { id: 'reading', name: 'Reading', icon: '📖', role: 'event', scheduleType: 'fixedTime', time: '20:15' },
   { id: 'bedtime', name: 'Bedtime', icon: '🛏', role: 'event', scheduleType: 'fixedTime', time: '20:45' },
