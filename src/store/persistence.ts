@@ -11,8 +11,14 @@ export function loadData(): AppData {
     const fallback = createDefaultData();
     const clocks = Array.isArray(parsed.clocks) ? parsed.clocks : fallback.clocks;
     return {
-      // Backfill fields added after a save was made (e.g. ringtoneId) so old saved data keeps working.
-      clocks: clocks.map((c) => ({ ...c, ringtoneId: c.ringtoneId ?? 'gentleChime' })),
+      clocks: clocks.map((c) => ({
+        ...c,
+        // Backfill fields added after a save was made (e.g. ringtoneId) so old saved data keeps working.
+        ringtoneId: c.ringtoneId ?? 'gentleChime',
+        // One-time rename: the default "School" clock became "Kinder". Only touches it if it's
+        // still exactly the untouched default, so a clock someone deliberately named "School" stays put.
+        name: c.id === 'school' && c.name === 'School' ? 'Kinder' : c.name,
+      })),
       profiles: Array.isArray(parsed.profiles) ? parsed.profiles : fallback.profiles,
       settings: { ...fallback.settings, ...(parsed.settings ?? {}) },
       sleepLog: Array.isArray(parsed.sleepLog) ? parsed.sleepLog : fallback.sleepLog,
