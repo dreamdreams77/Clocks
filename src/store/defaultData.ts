@@ -26,7 +26,7 @@ export function createDefaultData(): AppData {
       clock({ id: 'mummy', name: 'Wake Mummy', icon: '👩', role: 'person', time: '08:00', order: 3, colorId: 'pink', soundEnabled: true, ringtoneId: 'classicBell' }),
       clock({ id: 'breakfast', name: 'Breakfast', icon: '🍳', role: 'event', time: '08:15', order: 4, colorId: 'orange', soundEnabled: true, ringtoneId: 'xylophone' }),
       clock({ id: 'dressed', name: 'Get Dressed', icon: '👕', role: 'event', time: '08:45', order: 5, colorId: 'teal' }),
-      clock({ id: 'school', name: 'School', icon: '🎒', role: 'event', time: '09:00', order: 6, colorId: 'green', repeat: { kind: 'weekdays' } }),
+      clock({ id: 'school', name: 'Kinder', icon: '🎒', role: 'event', time: '09:00', order: 6, colorId: 'green', repeat: { kind: 'weekdays' } }),
     ],
     settings: {
       themeId: 'moon',
@@ -52,7 +52,7 @@ export const CLOCK_PRESETS: Array<{ id: string; name: string; icon: string; role
   { id: 'breakfast', name: 'Breakfast', icon: '🍳', role: 'event', scheduleType: 'fixedTime', time: '08:15' },
   { id: 'brush', name: 'Brush Teeth', icon: '🪥', role: 'event', scheduleType: 'fixedTime', time: '08:30' },
   { id: 'dressed', name: 'Get Dressed', icon: '👕', role: 'event', scheduleType: 'fixedTime', time: '08:45' },
-  { id: 'schoolp', name: 'School', icon: '🎒', role: 'event', scheduleType: 'fixedTime', time: '09:00' },
+  { id: 'schoolp', name: 'Kinder', icon: '🎒', role: 'event', scheduleType: 'fixedTime', time: '09:00' },
   { id: 'shower', name: 'Shower', icon: '🚿', role: 'event', scheduleType: 'fixedTime', time: '18:00' },
   { id: 'bath', name: 'Bath', icon: '🛁', role: 'event', scheduleType: 'fixedTime', time: '18:30' },
   { id: 'reading', name: 'Reading', icon: '📖', role: 'event', scheduleType: 'fixedTime', time: '20:15' },
