@@ -11,8 +11,8 @@ html, body, #root {
 body {
   margin: 0;
   font-family: 'Nunito', 'Segoe UI', system-ui, -apple-system, sans-serif;
-  background: linear-gradient(160deg, var(--bg-a, #1b1740) 0%, var(--bg-b, #3a2d6b) 100%);
-  color: var(--text, #fff);
+  background: linear-gradient(160deg, var(--bg-a, #d9f0fd) 0%, var(--bg-b, #a9d9f5) 100%);
+  color: var(--text, #152a4d);
   transition: background 1.2s ease;
   min-height: 100vh;
   -webkit-tap-highlight-color: transparent;
@@ -512,7 +512,7 @@ button:focus-visible, a:focus-visible, [tabindex]:focus-visible, input:focus-vis
   z-index: 10;
 }
 .modal-sheet {
-  background: var(--bg-b, #3a2d6b);
+  background: var(--bg-b, #a9d9f5);
   width: 100%;
   max-width: 560px;
   max-height: 88vh;
