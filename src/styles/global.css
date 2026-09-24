@@ -213,6 +213,20 @@ button:focus-visible, a:focus-visible, [tabindex]:focus-visible, input:focus-vis
   opacity: 0.6;
 }
 
+/* A brief, periodic nudge in the last few minutes before a clock goes ready — a gentle heads-up,
+   not a constant shake. Most of each cycle sits still; the wiggle happens near the end. */
+.clock-card.is-almost,
+.hero-clock-wrap.is-almost {
+  animation: card-wiggle 3.2s ease-in-out infinite;
+}
+@keyframes card-wiggle {
+  0%, 90%, 100% { transform: rotate(0deg); }
+  92% { transform: rotate(-2deg); }
+  94% { transform: rotate(2deg); }
+  96% { transform: rotate(-1.5deg); }
+  98% { transform: rotate(1.5deg); }
+}
+
 .clock-card-name {
   font-size: 1.15rem;
   font-weight: 800;
@@ -590,6 +604,25 @@ button:focus-visible, a:focus-visible, [tabindex]:focus-visible, input:focus-vis
 @keyframes confetti-fall {
   0% { transform: translate(0, 0) rotate(0deg); opacity: 1; }
   100% { transform: translate(var(--drift, 0px), 100vh) rotate(var(--rot, 360deg)); opacity: 0; }
+}
+
+.twinkle-layer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 20;
+}
+.twinkle-star {
+  position: absolute;
+  opacity: 0;
+  animation: twinkle-fade 2.2s ease-in-out forwards;
+}
+@keyframes twinkle-fade {
+  0% { opacity: 0; transform: scale(0.6); }
+  30% { opacity: 1; transform: scale(1.1); }
+  70% { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(0.8); }
 }
 
 .streak-badge {

@@ -3,7 +3,7 @@ import type { AppData, AppSettings, Clock, Profile } from '../types';
 import { loadData, saveData } from './persistence';
 import { computeAppState, markOccurrenceDone, startTimer, stopTimer, type AppState } from '../engine/schedule';
 import { toISODate } from '../engine/time';
-import { playRingtone } from '../engine/sound';
+import { playRingtone, playGoodnightChime } from '../engine/sound';
 import { speak } from '../engine/speech';
 
 type Action =
@@ -70,6 +70,7 @@ interface StoreValue {
   addProfile: (profile: Profile) => void;
   updateProfile: (id: string, patch: Partial<Profile>) => void;
   deleteProfile: (id: string) => void;
+  goodnightBurstKey: number;
 }
 
 const StoreContext = createContext<StoreValue | null>(null);
@@ -142,11 +143,25 @@ export function AppStoreProvider({ children }: { children: ReactNode }) {
         playRingtone(clock.ringtoneId);
       }
       if (data.settings.readAloudEnabled) {
-        speak(clock.role === 'wakeup' ? 'Good morning! You can get up now!' : `${clock.name} time!`);
+        const name = data.settings.childName;
+        speak(clock.role === 'wakeup' ? `Good morning${name ? `, ${name}` : ''}! You can get up now!` : `${clock.name} time!`);
       }
     }
     prevStatusesRef.current = nextStatuses;
-  }, [appState, data.settings.soundEnabled, data.settings.readAloudEnabled]);
+  }, [appState, data.settings.soundEnabled, data.settings.readAloudEnabled, data.settings.childName]);
+
+  // A gentle "goodnight" moment when bedtime actually arrives — the counterpart to the wake
+  // celebration. Only fires on a real day->night transition witnessed live, never on first load.
+  const [goodnightBurstKey, setGoodnightBurstKey] = useState(0);
+  const prevSleepModeRef = useRef<'day' | 'night' | null>(null);
+  useEffect(() => {
+    const mode = appState.sleepState.mode;
+    if (prevSleepModeRef.current === 'day' && mode === 'night') {
+      setGoodnightBurstKey((k) => k + 1);
+      if (data.settings.soundEnabled) playGoodnightChime();
+    }
+    prevSleepModeRef.current = mode;
+  }, [appState.sleepState.mode, data.settings.soundEnabled]);
 
   const value: StoreValue = {
     data,
@@ -165,6 +180,7 @@ export function AppStoreProvider({ children }: { children: ReactNode }) {
     addProfile: useCallback((profile) => dispatch({ type: 'ADD_PROFILE', profile }), []),
     updateProfile: useCallback((id, patch) => dispatch({ type: 'UPDATE_PROFILE', id, patch }), []),
     deleteProfile: useCallback((id) => dispatch({ type: 'DELETE_PROFILE', id }), []),
+    goodnightBurstKey,
   };
 
   return <StoreContext.Provider value={value}>{children}</StoreContext.Provider>;

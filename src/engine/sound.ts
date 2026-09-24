@@ -133,6 +133,17 @@ export function playSuccessChime(): void {
   playNotes(SUCCESS_CHIME);
 }
 
+// A soft, slow descending 3-note phrase for bedtime — the calm opposite of the success chime.
+const GOODNIGHT_CHIME: Note[] = [
+  { at: 0, freq: 659.25, duration: 0.7, type: 'sine', gain: 0.16 },
+  { at: 0.5, freq: 523.25, duration: 0.8, type: 'sine', gain: 0.15 },
+  { at: 1.0, freq: 392, duration: 1.1, type: 'sine', gain: 0.14 },
+];
+
+export function playGoodnightChime(): void {
+  playNotes(GOODNIGHT_CHIME);
+}
+
 export function getRingtone(id: string): Ringtone {
   return RINGTONES.find((r) => r.id === id) ?? RINGTONES[0];
 }

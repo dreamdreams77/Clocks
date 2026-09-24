@@ -24,6 +24,17 @@ export function AdultSettings({ onExit }: { onExit: () => void }) {
         <button className="icon-btn" onClick={onExit} aria-label="Back to child view">✕</button>
       </div>
 
+      <div className="form-row" style={{ maxWidth: 260 }}>
+        <label htmlFor="child-name">Child's name</label>
+        <input
+          id="child-name"
+          type="text"
+          placeholder="Add name here"
+          value={data.settings.childName}
+          onChange={(e) => updateSettings({ childName: e.target.value.slice(0, 30) })}
+        />
+      </div>
+
       <div className="section-title">⏰ Quick schedule</div>
       <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', marginBottom: 12 }}>
         {sleepClock && (

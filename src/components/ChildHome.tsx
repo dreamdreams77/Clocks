@@ -12,10 +12,11 @@ import { SleepLogView } from './SleepLogView';
 import { InstallBanner } from './InstallBanner';
 import { SimpleClockIcon } from './SimpleClockIcon';
 import { Confetti } from './Confetti';
+import { Twinkle } from './Twinkle';
 import { StreakBadge } from './StreakBadge';
 
-export function ChildHome({ onOpenAdult }: { onOpenAdult: () => void }) {
-  const { data, now, appState, markDone, startTimerFor } = useStore();
+export function ChildHome({ onOpenAdult, onOpenPractice }: { onOpenAdult: () => void; onOpenPractice: () => void }) {
+  const { data, now, appState, markDone, startTimerFor, goodnightBurstKey } = useStore();
   const [showTimeline, setShowTimeline] = useState(false);
   const [burst, setBurst] = useState(0);
   const celebrate = () => {
@@ -64,20 +65,24 @@ export function ChildHome({ onOpenAdult }: { onOpenAdult: () => void }) {
 
       <div className="top-bar">
         <span style={{ fontSize: '1.6rem' }} aria-hidden="true">{theme.icon}</span>
-        <button className="icon-btn" onClick={onOpenAdult} aria-label="Grown-up settings">
-          <SimpleClockIcon />
-        </button>
+        <div style={{ display: 'flex', gap: 10 }}>
+          <button className="icon-btn" onClick={onOpenPractice} aria-label="Practice telling time">🎓</button>
+          <button className="icon-btn" onClick={onOpenAdult} aria-label="Grown-up settings">
+            <SimpleClockIcon />
+          </button>
+        </div>
       </div>
 
       <InstallBanner />
       <Confetti burstKey={burst} />
+      <Twinkle burstKey={goodnightBurstKey} />
 
       {appState.sleepState.mode === 'night' ? (
         <NightHero now={now} sleepClock={appState.sleepClock} wakeInstant={appState.sleepState.wakeInstant} msUntilWake={appState.sleepState.msUntilWake} reducedMotion={reducedMotion} faceStyle={faceStyle} />
       ) : wakeReadyNotDone && wakeState ? (
         <div className="hero">
           <div className="hero-icons" aria-hidden="true">☀️</div>
-          <div className="hero-title">Good Morning!</div>
+          <div className="hero-title">Good Morning{data.settings.childName ? `, ${data.settings.childName}` : ''}!</div>
           <div className="hero-clock-wrap">
             <AnalogClock now={now} size={200} reducedMotion={reducedMotion} showSeconds={false} />
           </div>

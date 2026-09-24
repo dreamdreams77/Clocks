@@ -54,6 +54,7 @@ export interface Profile {
 export type ClockFaceStyle = 'analog' | 'digital' | 'countdown' | 'analogCountdown';
 
 export interface AppSettings {
+  childName: string;
   themeId: string;
   clockFaceStyle: ClockFaceStyle;
   childViewMode: 'all' | 'next';

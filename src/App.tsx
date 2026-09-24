@@ -5,8 +5,9 @@ import { unlockAudio } from './engine/sound';
 import { ChildHome } from './components/ChildHome';
 import { PinLock } from './components/adult/PinLock';
 import { AdultSettings } from './components/adult/AdultSettings';
+import { PracticeClock } from './components/PracticeClock';
 
-type View = 'child' | 'adultLock' | 'adult';
+type View = 'child' | 'adultLock' | 'adult' | 'practice';
 
 export function App() {
   const { data, appState } = useStore();
@@ -44,9 +45,14 @@ export function App() {
     return <AdultSettings onExit={() => setView('child')} />;
   }
 
+  if (view === 'practice') {
+    return <PracticeClock onExit={() => setView('child')} readAloudEnabled={data.settings.readAloudEnabled} />;
+  }
+
   return (
     <ChildHome
       onOpenAdult={() => setView(data.settings.parentPinHash ? 'adultLock' : 'adult')}
+      onOpenPractice={() => setView('practice')}
     />
   );
 }

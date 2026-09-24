@@ -29,13 +29,16 @@ function statusText(clock: Clock, state: ClockState): string {
   }
 }
 
+const ALMOST_THRESHOLD_MS = 5 * 60 * 1000;
+
 export function ClockCard({ clock, state, now, reducedMotion, faceStyle, onDone }: ClockCardProps) {
   const showAnalog = faceStyle === 'analog' || faceStyle === 'analogCountdown';
   const showCountdownText = faceStyle === 'countdown' || faceStyle === 'analogCountdown' || faceStyle === 'digital';
+  const isAlmost = state.status === 'upcoming' && state.msRemaining > 0 && state.msRemaining <= ALMOST_THRESHOLD_MS;
 
   return (
     <div
-      className={`clock-card${state.status === 'ready' ? ' is-ready' : ''}${state.status === 'completed' ? ' is-completed' : ''}`}
+      className={`clock-card${state.status === 'ready' ? ' is-ready' : ''}${state.status === 'completed' ? ' is-completed' : ''}${isAlmost && !reducedMotion ? ' is-almost' : ''}`}
       role="group"
       aria-label={`${clock.name}: ${statusText(clock, state)}`}
     >

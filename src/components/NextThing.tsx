@@ -22,13 +22,14 @@ export function NextThing({ now, entry, reducedMotion, onDone }: NextThingProps)
   }
   const { clock, state } = entry;
   const ready = state.status === 'ready';
+  const isAlmost = state.status === 'upcoming' && state.msRemaining > 0 && state.msRemaining <= 5 * 60 * 1000;
   return (
     <div className="hero">
       <div className="hero-icons" aria-hidden="true">{ready ? '❤️' : clock.icon}</div>
       <div className="hero-sub">{ready ? '' : 'NEXT'}</div>
       <div className="hero-title">{clock.name}</div>
       {state.targetInstant && (
-        <div className="hero-clock-wrap">
+        <div className={`hero-clock-wrap${isAlmost && !reducedMotion ? ' is-almost' : ''}`}>
           <AnalogClock now={now} target={state.targetInstant} size={220} reducedMotion={reducedMotion} />
         </div>
       )}

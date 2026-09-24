@@ -29,6 +29,7 @@ export function createDefaultData(): AppData {
       clock({ id: 'school', name: 'Kinder', icon: '🎒', role: 'event', time: '09:00', order: 6, colorId: 'green', repeat: { kind: 'weekdays' } }),
     ],
     settings: {
+      childName: '',
       themeId: 'moon',
       clockFaceStyle: 'analogCountdown',
       childViewMode: 'all',
