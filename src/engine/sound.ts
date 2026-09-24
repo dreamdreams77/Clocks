@@ -94,9 +94,8 @@ export function unlockAudio(): void {
   getContext();
 }
 
-export function playRingtone(id: string): void {
-  const notes = RINGTONE_NOTES[id];
-  if (!notes || notes.length === 0) return;
+function playNotes(notes: Note[]): void {
+  if (notes.length === 0) return;
   const ctx = getContext();
   if (!ctx) return;
   const now = ctx.currentTime;
@@ -115,6 +114,23 @@ export function playRingtone(id: string): void {
     osc.start(startAt);
     osc.stop(startAt + note.duration + 0.02);
   }
+}
+
+export function playRingtone(id: string): void {
+  playNotes(RINGTONE_NOTES[id] ?? []);
+}
+
+// A quick, cheerful 4-note ascending "ta-da" — the sound for tapping Done!, distinct from any
+// alarm ringtone so a child learns to tell "something is ready" apart from "well done".
+const SUCCESS_CHIME: Note[] = [
+  { at: 0, freq: 587.33, duration: 0.16, type: 'triangle', gain: 0.22 },
+  { at: 0.1, freq: 739.99, duration: 0.16, type: 'triangle', gain: 0.22 },
+  { at: 0.2, freq: 880, duration: 0.16, type: 'triangle', gain: 0.24 },
+  { at: 0.32, freq: 1174.66, duration: 0.4, type: 'triangle', gain: 0.26 },
+];
+
+export function playSuccessChime(): void {
+  playNotes(SUCCESS_CHIME);
 }
 
 export function getRingtone(id: string): Ringtone {

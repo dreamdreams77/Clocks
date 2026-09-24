@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { computeSleepState, computeClockState, computeAppState, markOccurrenceDone, startTimer } from './schedule';
+import { computeSleepState, computeClockState, computeAppState, markOccurrenceDone, startTimer, computeStreak } from './schedule';
 import type { Clock, Profile } from '../types';
 
 function dt(y: number, mo: number, d: number, h: number, mi: number): Date {
@@ -260,5 +260,29 @@ describe('computeAppState with profiles', () => {
     const names = app.clockStates.map((cs) => cs.clock.id);
     expect(names).toContain('weekend-play');
     expect(names).not.toContain('school-breakfast');
+  });
+});
+
+describe('computeStreak', () => {
+  it('counts consecutive days ending today', () => {
+    const now = dt(2024, 6, 13, 8, 0); // Thursday
+    const dates = ['2024-06-11', '2024-06-12', '2024-06-13'];
+    expect(computeStreak(dates, now)).toBe(3);
+  });
+
+  it('keeps counting from yesterday if today is not marked done yet (streak still alive)', () => {
+    const now = dt(2024, 6, 13, 6, 30);
+    const dates = ['2024-06-11', '2024-06-12'];
+    expect(computeStreak(dates, now)).toBe(2);
+  });
+
+  it('breaks on a gap', () => {
+    const now = dt(2024, 6, 13, 8, 0);
+    const dates = ['2024-06-10', '2024-06-13'];
+    expect(computeStreak(dates, now)).toBe(1);
+  });
+
+  it('is zero with no completed dates', () => {
+    expect(computeStreak([], dt(2024, 6, 13, 8, 0))).toBe(0);
   });
 });

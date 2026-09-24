@@ -4,6 +4,7 @@ import { loadData, saveData } from './persistence';
 import { computeAppState, markOccurrenceDone, startTimer, stopTimer, type AppState } from '../engine/schedule';
 import { toISODate } from '../engine/time';
 import { playRingtone } from '../engine/sound';
+import { speak } from '../engine/speech';
 
 type Action =
   | { type: 'ADD_CLOCK'; clock: Clock }
@@ -118,8 +119,9 @@ export function AppStoreProvider({ children }: { children: ReactNode }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [appState.sleepState.mode, appState.sleepState.bedtimeInstant.getTime(), appState.sleepState.wakeInstant.getTime()]);
 
-  // Play each clock's chosen ringer the moment it *becomes* ready — never on every re-render,
-  // and never on first load (so an already-ready clock doesn't blast a sound on app open).
+  // Play each clock's chosen ringer — and optionally say its name out loud — the moment it
+  // *becomes* ready. Never on every re-render, and never on first load (so an already-ready
+  // clock doesn't blast a sound/announcement the instant the app opens).
   const prevStatusesRef = useRef<Map<string, string> | null>(null);
   useEffect(() => {
     const nextStatuses = new Map<string, string>();
@@ -135,12 +137,16 @@ export function AppStoreProvider({ children }: { children: ReactNode }) {
       nextStatuses.set(id, status);
       const prevStatus = prevStatusesRef.current?.get(id);
       const justBecameReady = status === 'ready' && prevStatus != null && prevStatus !== 'ready';
-      if (justBecameReady && data.settings.soundEnabled && clock?.soundEnabled && clock.ringtoneId) {
+      if (!justBecameReady || !clock) continue;
+      if (data.settings.soundEnabled && clock.soundEnabled && clock.ringtoneId) {
         playRingtone(clock.ringtoneId);
+      }
+      if (data.settings.readAloudEnabled) {
+        speak(clock.role === 'wakeup' ? 'Good morning! You can get up now!' : `${clock.name} time!`);
       }
     }
     prevStatusesRef.current = nextStatuses;
-  }, [appState, data.settings.soundEnabled]);
+  }, [appState, data.settings.soundEnabled, data.settings.readAloudEnabled]);
 
   const value: StoreValue = {
     data,

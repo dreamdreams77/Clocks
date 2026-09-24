@@ -59,6 +59,7 @@ export interface AppSettings {
   childViewMode: 'all' | 'next';
   showTimeline: boolean;
   soundEnabled: boolean;
+  readAloudEnabled: boolean;
   reducedMotion: boolean;
   highContrast: boolean;
   largeText: boolean;

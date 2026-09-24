@@ -118,6 +118,16 @@ export function AdultSettings({ onExit }: { onExit: () => void }) {
         </div>
       )}
 
+      <div className="switch-row">
+        <span>Read clock names out loud</span>
+        <button className={`switch${data.settings.readAloudEnabled ? ' is-on' : ''}`} role="switch" aria-checked={data.settings.readAloudEnabled} onClick={() => updateSettings({ readAloudEnabled: !data.settings.readAloudEnabled })}>
+          <span className="switch-knob" />
+        </button>
+      </div>
+      <p className="list-item-sub" style={{ marginTop: -6, marginBottom: 8 }}>
+        Says things like "Breakfast time!" out loud when a clock is ready — helpful before your child can read.
+      </p>
+
       <div className="section-title">♿ Accessibility</div>
       <div className="switch-row">
         <span>Large text</span>

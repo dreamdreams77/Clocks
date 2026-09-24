@@ -2,6 +2,8 @@ import { useMemo, useState } from 'react';
 import { useStore } from '../store/AppStore';
 import { getTheme } from '../themes/themes';
 import { friendlyClockTime, friendlyDuration } from '../engine/time';
+import { computeStreak } from '../engine/schedule';
+import { playSuccessChime } from '../engine/sound';
 import { AnalogClock } from './AnalogClock';
 import { ClockCard } from './ClockCard';
 import { NextThing } from './NextThing';
@@ -9,10 +11,18 @@ import { TimelineView } from './TimelineView';
 import { SleepLogView } from './SleepLogView';
 import { InstallBanner } from './InstallBanner';
 import { SimpleClockIcon } from './SimpleClockIcon';
+import { Confetti } from './Confetti';
+import { StreakBadge } from './StreakBadge';
 
 export function ChildHome({ onOpenAdult }: { onOpenAdult: () => void }) {
   const { data, now, appState, markDone, startTimerFor } = useStore();
   const [showTimeline, setShowTimeline] = useState(false);
+  const [burst, setBurst] = useState(0);
+  const celebrate = () => {
+    setBurst((b) => b + 1);
+    if (data.settings.soundEnabled) playSuccessChime();
+  };
+  const streak = appState.wakeClock ? computeStreak(appState.wakeClock.completedDates, now) : 0;
   const theme = getTheme(data.settings.themeId);
   const reducedMotion = data.settings.reducedMotion;
   const faceStyle = data.settings.clockFaceStyle;
@@ -60,6 +70,7 @@ export function ChildHome({ onOpenAdult }: { onOpenAdult: () => void }) {
       </div>
 
       <InstallBanner />
+      <Confetti burstKey={burst} />
 
       {appState.sleepState.mode === 'night' ? (
         <NightHero now={now} sleepClock={appState.sleepClock} wakeInstant={appState.sleepState.wakeInstant} msUntilWake={appState.sleepState.msUntilWake} reducedMotion={reducedMotion} faceStyle={faceStyle} />
@@ -71,7 +82,14 @@ export function ChildHome({ onOpenAdult }: { onOpenAdult: () => void }) {
             <AnalogClock now={now} size={200} reducedMotion={reducedMotion} showSeconds={false} />
           </div>
           <div className="hero-sub">You can get up now! ❤️</div>
-          <button className="big-button" onClick={() => appState.wakeClock && markDone(appState.wakeClock.id, wakeState.occurrenceKey!)}>
+          <button
+            className="big-button"
+            onClick={() => {
+              if (!appState.wakeClock) return;
+              markDone(appState.wakeClock.id, wakeState.occurrenceKey!);
+              celebrate();
+            }}
+          >
             I'm up! 🎉
           </button>
         </div>
@@ -81,6 +99,8 @@ export function ChildHome({ onOpenAdult }: { onOpenAdult: () => void }) {
           <div className="hero-title" style={{ fontSize: '1.5rem' }}>Morning</div>
         </div>
       )}
+
+      {appState.sleepState.mode === 'day' && <StreakBadge streak={streak} />}
 
       {/* The rest of the day's/night's clocks — always visible together, not just after wake,
           so the child can see everything that's set (per "multiple clocks on the main page"). */}
@@ -96,7 +116,16 @@ export function ChildHome({ onOpenAdult }: { onOpenAdult: () => void }) {
         {showTimeline ? (
           <TimelineView sleepClock={appState.sleepClock} wakeClock={appState.wakeClock} sleepState={appState.sleepState} entries={childEntries} />
         ) : data.settings.childViewMode === 'next' ? (
-          <NextThing now={now} entry={nextEntry} reducedMotion={reducedMotion} onDone={() => nextEntry && markDone(nextEntry.clock.id, nextEntry.state.occurrenceKey!)} />
+          <NextThing
+            now={now}
+            entry={nextEntry}
+            reducedMotion={reducedMotion}
+            onDone={() => {
+              if (!nextEntry) return;
+              markDone(nextEntry.clock.id, nextEntry.state.occurrenceKey!);
+              celebrate();
+            }}
+          />
         ) : (
           <>
             {activeEntries.length > 0 && (
@@ -109,7 +138,10 @@ export function ChildHome({ onOpenAdult }: { onOpenAdult: () => void }) {
                     now={now}
                     reducedMotion={reducedMotion}
                     faceStyle={faceStyle}
-                    onDone={() => markDone(clock.id, state.occurrenceKey!)}
+                    onDone={() => {
+                      markDone(clock.id, state.occurrenceKey!);
+                      celebrate();
+                    }}
                   />
                 ))}
               </div>

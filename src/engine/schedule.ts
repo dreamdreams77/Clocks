@@ -191,3 +191,20 @@ export function stopTimer(clock: Clock): Clock {
 export function makeDefaultRepeat(kind: RepeatRule['kind'] = 'daily'): RepeatRule {
   return { kind };
 }
+
+/**
+ * How many consecutive days (ending today, or ending yesterday if today hasn't happened yet)
+ * appear in a clock's completedDates. Used for the "days in a row" streak badge — today not
+ * being marked done yet doesn't break a streak that's still in progress.
+ */
+export function computeStreak(completedDates: string[], now: Date): number {
+  const done = new Set(completedDates);
+  let cursor = startOfDay(now);
+  if (!done.has(toISODate(cursor))) cursor = addDays(cursor, -1);
+  let count = 0;
+  while (done.has(toISODate(cursor))) {
+    count++;
+    cursor = addDays(cursor, -1);
+  }
+  return count;
+}

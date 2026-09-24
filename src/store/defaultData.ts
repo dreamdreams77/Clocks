@@ -34,6 +34,7 @@ export function createDefaultData(): AppData {
       childViewMode: 'all',
       showTimeline: true,
       soundEnabled: true,
+      readAloudEnabled: true,
       reducedMotion: false,
       highContrast: false,
       largeText: false,
